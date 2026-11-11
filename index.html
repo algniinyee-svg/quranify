@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>QuranKu - Kloning Quranify</title>
+<style>
+/* ====== RESET & VARIABEL ====== */
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg: #000000;
+  --surface: #1a1a1a;
+  --surface-light: #2a2a2a;
+  --text: #ffffff;
+  --text-muted: #888888;
+  --accent: #2196f3;
+  --accent-light: #64b5f6;
+  --success: #4ade80;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --border: #333333;
+  --nav-width: 440px;
+  --mini-height: 64px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#app {
+  max-width: var(--nav-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 180px;
+}
+
+/* ====== HEADER ====== */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  background: rgba(0,0,0,0.95);
+  backdrop-filter: blur(10px);
+  z-index: 80;
+  border-bottom: 1px solid transparent;
+}
+.page-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.premium-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+.premium-btn:hover { border-color: var(--accent); }
+.header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+.header-icon svg { width: 20px; height: 20px; fill: var(--text); }
+
+/* ====== BOTTOM NAVIGATION ====== */
+.bottom-nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: var(--nav-width);
+  background: rgba(26,26,26,0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 28px;
+  display: flex;
+  justify-content: space-evenly;
+  padding: 8px 4px;
+  z-index: 100;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 20px;
+  transition: all .2s;
+  background: none;
+  border: none;
+  font-size: 10px;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+}
+.nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+.nav-item.active { color: var(--text); }
+.nav-item.active .icon-wrap {
+  background: var(--surface-light);
+  border-radius: 18px;
+}
+.nav-item .icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 32px;
+  border-radius: 18px;
+  transition: background .2s;
+}
+
+/* ====== MINI PLAYER ====== */
+.mini-player {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: var(--nav-width);
+  background: rgba(26,26,26,0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 90;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  cursor: pointer;
+  transition: transform .2s;
+}
+.mini-player:hover { transform: translateX(-50%) scale(1.01); }
+.mini-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-light);
+}
+.mini-info { flex:1; min-width:0; }
+.mini-title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mini-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+.mini-controls { display:flex; gap: 4px; align-items:center; }
+.mini-controls button {
+  background:none;
+  border:none;
+  color: var(--text);
+  cursor:pointer;
+  padding: 4px 6px;
+  display:flex;
+  align-items:center;
+}
+.mini-controls svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* ====== CARD GENERIK ====== */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 24px 20px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.section-title .see-all {
+  font-size: 14px;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 500;
+}
+.see-all:hover { text-decoration: underline; }
+
+/* ====== SCROLLABLE ROW ====== */
+.h-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 0 20px 12px;
+  scrollbar-width: none;
+}
+.h-scroll::-webkit-scrollbar { display: none; }
+
+/* ====== RECITER CIRCLE ====== */
+.reciter-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  min-width: 80px;
+  width: 90px;
+  text-align: center;
+}
+.reciter-circle img {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border: 2px solid transparent;
+  transition: border-color .2s, transform .2s;
+}
+.reciter-circle:hover img { border-color: var(--accent); transform: scale(1.05); }
+.reciter-circle .name {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.reciter-circle.new-badge { position: relative; }
+.reciter-circle.new-badge::after {
+  content: 'NEW';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--success);
+  color: #000;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 8px;
+  z-index: 2;
+}
+
+/* ====== PLAYLIST CARD ====== */
+.playlist-card {
+  min-width: 160px;
+  height: 180px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.playlist-card:hover { transform: scale(1.03); }
+.playlist-card .bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(.6);
+  transition: filter .2s;
+}
+.playlist-card:hover .bg { filter: brightness(.4); }
+.playlist-card .content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 14px;
+  background: linear-gradient(transparent, rgba(0,0,0,.8));
+}
+.playlist-card .title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.playlist-card .subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ====== PLAYLIST GRID ====== */
+.playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 0 20px;
+}
+.playlist-grid .playlist-card { min-width: 0; width: 100%; height: 200px; }
+
+/* ====== SETTINGS MENU ====== */
+.settings-section {
+  padding: 16px 20px;
+}
+.settings-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+.settings-group {
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.settings-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  transition: background .2s;
+}
+.settings-item:last-child { border-bottom: none; }
+.settings-item:hover { background: var(--surface-light); }
+.settings-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.settings-text { flex:1; }
+.settings-text .stitle { font-size: 15px; font-weight: 500; }
+.settings-text .sdesc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.settings-arrow { color: var(--text-muted); font-size: 18px; }
+
+/* ====== SEARCH ====== */
+.search-page {
+  padding: 20px;
+}
+.search-header h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+.search-bar {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.search-bar svg { width: 20px; height: 20px; fill: var(--text-muted); }
+.search-bar input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 15px;
+}
+.search-bar input::placeholder { color: var(--text-muted); }
+.search-categories {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 8px;
+}
+.search-cat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.search-cat:hover { background: var(--surface-light); }
+.search-cat .icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.search-cat .cat-title { font-size: 15px; font-weight: 600; }
+.search-cat .cat-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* ====== INSIGHTS ====== */
+.insights-card {
+  margin: 0 20px;
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+.insights-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.insights-header h3 { font-size: 18px; font-weight: 700; }
+.insights-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.stat-box {
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--surface-light);
+  border-radius: 12px;
+}
+.stat-box .label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.stat-box .value { font-size: 18px; font-weight: 700; }
+.today-card {
+  text-align: center;
+  background: var(--surface-light);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.today-card .time {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.today-card .goal { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.week-days {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 0 10px;
+}
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.day .circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.day.active .circle { background: var(--accent); border-color: var(--accent); }
+.day.active .label { color: var(--accent); }
+.day .label { font-size: 11px; color: var(--text-muted); }
+
+/* ====== RECENTLY PLAYED ====== */
+.recently-section {
+  margin: 0 20px 20px;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--border);
+}
+.recently-section img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+.recently-info { flex: 1; }
+.recently-info .rlabel { font-size: 12px; color: var(--text-muted); }
+.recently-info .rname { font-size: 17px; font-weight: 700; margin: 4px 0 10px; }
+.continue-btn {
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.continue-btn:hover { opacity: .9; }
+
+/* ====== PLAYER OVERLAY ====== */
+.player-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #000 0%, #0a0a0a 50%, #000 100%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform .4s cubic-bezier(.4,0,.2,1);
+}
+.player-overlay.open { transform: translateY(0); }
+.player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+.player-header button {
+  background: var(--surface);
+  border: none;
+  color: var(--text);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+.player-bg-select {
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: var(--text);
+  padding: 8px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+.player-qari {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+.player-qari img {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+.player-info {
+  text-align: center;
+}
+.player-info h2 { font-size: 24px; font-weight: 700; }
+.player-info p { font-size: 15px; color: var(--text-muted); margin-top: 4px; }
+.player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0;
+}
+.player-controls button {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+}
+.player-controls .play-btn {
+  width: 72px;
+  height: 72px;
+  background: var(--text);
+  color: var(--bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.player-controls .play-btn svg { width: 32px; height: 32px; fill: currentColor; }
+.player-controls button:not(.play-btn) svg { width: 28px; height: 28px; fill: currentColor; }
+.player-progress {
+  padding: 0 20px;
+  margin-top: 10px;
+}
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,.2);
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  width: 0%;
+}
+.progress-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.player-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin-top: 10px;
+}
+.player-bottom button {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 22px;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 480px) {
+  .bottom-nav { bottom: 8px; }
+  .mini-player { bottom: 82px; }
+  .player-qari img { width: 180px; height: 180px; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="page-header" id="pageHeader"></header>
+  <div id="content"></div>
+</div>
+
+<!-- Mini Player -->
+<div class="mini-player" id="miniPlayer" onclick="openPlayer()">
+  <img class="mini-avatar" id="miniAvatar" src="https://ui-avatars.com/api/?name=Mishary+Rashid&background=0D8ABC&color=fff&size=128" alt="avatar">
+  <div class="mini-info">
+    <div class="mini-title" id="miniTitle">18. Al-Kahf</div>
+    <div class="mini-subtitle" id="miniSubtitle">Mishary Rashid Alafasy</div>
+  </div>
+  <div class="mini-controls">
+    <button onclick="event.stopPropagation(); togglePlay()">
+      <svg id="miniPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button onclick="event.stopPropagation(); nextTrack()">
+      <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<!-- Player Overlay -->
+<div class="player-overlay" id="playerOverlay">
+  <div class="player-header">
+    <button onclick="closePlayer()">︿</button>
+    <select class="player-bg-select">
+      <option>Background sound</option>
+      <option>No background</option>
+    </select>
+    <button>⋮</button>
+  </div>
+  <div class="player-qari">
+    <img id="playerAvatar" src="https://ui-avatars.com/api/?name=Mishary+Rashid&background=0D8ABC&color=fff&size=128" alt="qari">
+    <div class="player-info">
+      <h2 id="playerTitle">18. Al-Kahf</h2>
+      <p id="playerSubtitle">Mishary Rashid Alafasy</p>
+    </div>
+  </div>
+  <div class="player-controls">
+    <button onclick="setSpeed()"><span id="speedLabel" style="font-size:13px;">1x</span></button>
+    <button onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" transform="rotate(180 12 12)"/></svg></button>
+    <button class="play-btn" onclick="togglePlay()">
+      <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+    <button>🌙</button>
+  </div>
+  <div class="player-progress">
+    <div class="progress-bar" onclick="seek(event)">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-times">
+      <span id="curTime">00:42</span>
+      <span id="durTime">-32:33</span>
+    </div>
+  </div>
+  <div class="player-bottom">
+    <button>🔊</button>
+    <button>🕋</button>
+    <button>📡</button>
+    <button>≡</button>
+  </div>
+</div>
+
+<script>
+// ====== DATA DUMMY (jika API tidak tersedia) ======
+const FALLBACK_RECITERS = [
+  { id:'mishary', name:'Mishary Rashid Alafasy', country:'Kuwait', image:'https://ui-avatars.com/api/?name=Mishary+Rashid&background=0D8ABC&color=fff&size=128' },
+  { id:'abdurrahman', name:'Abdur Rahman Al-Sudais', country:'Saudi Arabia', image:'https://ui-avatars.com/api/?name=Abdur+Rahman&background=1E3A8A&color=fff&size=128' },
+  { id:'yasser', name:'Yasser Al-Dosari', country:'Saudi Arabia', image:'https://ui-avatars.com/api/?name=Yasser+Al-Dosari&background=0D9488&color=fff&size=128' },
+  { id:'ahmed', name:'Ahmed Kaseb', country:'Egypt', image:'https://ui-avatars.com/api/?name=Ahmed+Kaseb&background=DC2626&color=fff&size=128' },
+  { id:'omar', name:'Omar Bn DiaaAldeen', country:'Kazakhstan', image:'https://ui-avatars.com/api/?name=Omar+Bn&background=111827&color=fff&size=128' },
+  { id:'maher', name:'Maher Al-Muaiqly', country:'Saudi Arabia', image:'https://ui-avatars.com/api/?name=Maher&background=059669&color=fff&size=128' },
+  { id:'saad', name:'Saad Al-Ghamdi', country:'Saudi Arabia', image:'https://ui-avatars.com/api/?name=Saad&background=DB2777&color=fff&size=128' }
+];
+
+const FALLBACK_PLAYLISTS = [
+  { id:'duaa', title:'Duaa & Ruqia', color:'#4ade80', image:'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=400' },
+  { id:'emotional', title:'Emotional Recitations', color:'#8b5cf6', image:'https://images.unsplash.com/photo-1471107340929-a87cd0f5b5f3?w=400' },
+  { id:'muhammad', title:'Muhammad Al-Luhaidan', reciter:'Muhammad Al-Luhaidan', color:'#059669', image:'https://ui-avatars.com/api/?name=Muhammad+Al-Luhaidan&background=059669&color=fff&size=128' },
+  { id:'yasser-set', title:'Yasser Al-Dosari', reciter:'Yasser Al-Dosari', color:'#0D9488', image:'https://ui-avatars.com/api/?name=Yasser+Al-Dosari&background=0D9488&color=fff&size=128' },
+  { id:'abdulrahman', title:'Abdul Rahman Mossad', reciter:'Abdul Rahman Mossad', color:'#1E3A8A', image:'https://ui-avatars.com/api/?name=Abdul+Rahman+Mossad&background=1E3A8A&color=fff&size=128' },
+  { id:'umair', title:'Umair Shamim', reciter:'Umair Shamim', color:'#374151', image:'https://ui-avatars.com/api/?name=Umair+Shamim&background=374151&color=fff&size=128' }
+];
+
+// ====== STATE ======
+let state = {
+  tab: 'home',
+  user: {
+    id: 'default',
+    streak: 0,
+    weeklyMinutes: 0,
+    totalMinutes: 0,
+    bookmarks: [],
+    recentlyPlayed: [],
+    favourites: []
+  },
+  reciters: FALLBACK_RECITERS,
+  playlists: FALLBACK_PLAYLISTS,
+  nowPlaying: null,
+  isPlaying: false,
+  audio: null,
+  speed: 1,
+  playHistory: []
+};
+
+// ====== UTIL ======
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+
+async function fetchData() {
+  try {
+    const res = await fetch('/api/data');
+    const data = await res.json();
+    if (data.reciters && data.reciters.length) state.reciters = data.reciters;
+    if (data.playlists && data.playlists.length) state.playlists = data.playlists;
+    if (data.user) state.user = data.user;
+  } catch(e) {
+    console.log('Menggunakan data fallback (backend belum aktif)');
+  }
+}
+
+async function postProgress(seconds) {
+  try {
+    await fetch(`/api/user/${state.user.id}/progress`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        surah: state.nowPlaying?.surah || null,
+        reciter: state.nowPlaying?.reciterId || 'mishary',
+        seconds
+      })
+    });
+  } catch(e) {}
+}
+
+async function toggleBookmarkAPI(surah, ayat) {
+  try {
+    await fetch(`/api/user/${state.user.id}/bookmark`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ surah, ayat })
+    });
+  } catch(e) {}
+}
+
+// ====== NAVIGATION ======
+const TABS = [
+  { id:'home', label:'Home', icon:'M12 3l9 9h-4v9h-4v-7H11v7H7v-9H3z' },
+  { id:'reciters', label:'Reciters', icon:'M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5z' },
+  { id:'playlists', label:'Playlists', icon:'M4 10h16v2H4zm0-6h16v2H4zm-4 12h16v2H0z' },
+  { id:'settings', label:'Settings', icon:'M12 15a3 3 0 100-6 3 3 0 000 6zm7-3a7 7 0 01-.1 1.2l2 1.6-2 3.4-2.4-1a7 7 0 01-2 1.2L14 22h-4l-.5-2.6a7 7 0 01-2-1.2l-2.4 1-2-3.4 2-1.6A7 7 0 015 12c0-.4 0-.8.1-1.2l-2-1.6 2-3.4 2.4 1a7 7 0 012-1.2L10 2h4l.5 2.6a7 7 0 012 1.2l2.4-1 2 3.4-2 1.6c.1.4.1.8.1 1.2z' },
+  { id:'search', label:'Search', icon:'M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z' }
+];
+
+function navigate(tab) {
+  state.tab = tab;
+  renderAll();
+}
+
+// ====== RENDER ======
+function renderAll() {
+  renderHeader();
+  renderContent();
+  renderBottomNav();
+  renderMiniPlayer();
+}
+
+function renderHeader() {
+  const header = $('#pageHeader');
+  let rightIcon = '';
+  
+  if (state.tab === 'home') {
+    rightIcon = `<div class="header-icon" onclick="showInsights()">
+      <svg viewBox="0 0 24 24"><path d="M5 9h3v11H5zm7-7h3v18h-3zm7 4h3v14h-3z"/></svg>
+    </div>`;
+  }
+  
+  header.innerHTML = `
+    <button class="premium-btn">Premium</button>
+    <h1>${state.tab === 'home' ? 'Home' : state.tab === 'reciters' ? 'Reciters' : state.tab === 'playlists' ? 'Playlists' : state.tab === 'settings' ? 'Settings' : 'Search'}</h1>
+    ${rightIcon || '<div style="width:40px"></div>'}
+  `;
+}
+
+function renderBottomNav() {
+  const nav = $('#bottomNav');
+  nav.innerHTML = TABS.map(t => `
+    <button class="nav-item ${state.tab === t.id ? 'active' : ''}" onclick="navigate('${t.id}')">
+      <div class="icon-wrap">
+        <svg viewBox="0 0 24 24"><path d="${t.icon}"/></svg>
+      </div>
+      ${t.label}
+    </button>
+  `).join('');
+}
+
+function renderMiniPlayer() {
+  const mini = $('#miniPlayer');
+  if (!state.nowPlaying) {
+    mini.style.display = 'flex';
+    return;
+  }
+  mini.style.display = 'flex';
+  $('#miniAvatar').src = state.nowPlaying.image;
+  $('#miniTitle').textContent = state.nowPlaying.surahName;
+  $('#miniSubtitle').textContent = state.nowPlaying.reciterName;
+  $('#miniPlayIcon').innerHTML = state.isPlaying ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>';
+}
+
+function renderContent() {
+  const content = $('#content');
+  switch(state.tab) {
+    case 'home': renderHome(content); break;
+    case 'reciters': renderReciters(content); break;
+    case 'playlists': renderPlaylists(content); break;
+    case 'settings': renderSettings(content); break;
+    case 'search': renderSearch(content); break;
+  }
+}
+
+// ====== HOME ======
+function renderHome(container) {
+  const rec = state.reciters;
+  const recent = state.user.recentlyPlayed[0];
+  const recentReciter = recent ? rec.find(r => r.id === recent.reciter) || rec[0] : rec[0];
+  const favReciters = state.user.favourites.length 
+    ? rec.filter(r => state.user.favourites.includes(r.id))
+    : rec.slice(0, 4);
+
+  container.innerHTML = `
+    <div style="padding-bottom:20px;">
+      <!-- Recently Played -->
+      <div class="recently-section" onclick="playFromHome('${recentReciter.id}')">
+        <img src="${recentReciter.image}" alt="${recentReciter.name}">
+        <div class="recently-info">
+          <div class="rlabel">Recently Played</div>
+          <div class="rname">${recentReciter.name}</div>
+          <button class="continue-btn" onclick="event.stopPropagation(); playFromHome('${recentReciter.id}')">▶ Continue listening</button>
+        </div>
+      </div>
+
+      <!-- Your favourites -->
+      <div class="section-title">
+        <span>★ Your favourites</span>
+        <span class="see-all" onclick="navigate('reciters')">See all</span>
+      </div>
+      <div class="h-scroll">
+        ${favReciters.map(r => `
+          <div class="reciter-circle" onclick="playFromHome('${r.id}')">
+            <img src="${r.image}" alt="${r.name}">
+            <div class="name">${r.name}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Playlists -->
+      <div class="section-title">
+        <span>Playlists</span>
+        <span class="see-all" onclick="navigate('playlists')">See all</span>
+      </div>
+      <div class="h-scroll">
+        ${state.playlists.slice(0, 4).map(p => `
+          <div class="playlist-card" onclick="openPlaylist('${p.id}')">
+            <div class="bg" style="background-image:url('${p.image}')"></div>
+            <div class="content">
+              <div class="title">${p.title}</div>
+              <div class="subtitle">${p.reciter ? 'Special set' : ''}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Insights -->
+      <div class="section-title">
+        <span>Insights ⓘ</span>
+        <span class="see-all">See more</span>
+      </div>
+      <div class="insights-card">
+        <div class="insights-stats">
+          <div class="stat-box">
+            <div class="label">🔥 Streak</div>
+            <div class="value">${state.user.streak || 0} days</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">📊 This week</div>
+            <div class="value">${Math.floor(state.user.weeklyMinutes || 0)} min</div>
+          </div>
+          <div class="stat-box">
+            <div class="label">🏆 Record</div>
+            <div class="value">${state.user.totalMinutes ? Math.floor(state.user.totalMinutes) : 0} days</div>
+          </div>
+        </div>
+        <div class="today-card">
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Today's listening</div>
+          <div class="time">0:00</div>
+          <div class="goal">of your 19-minute goal →</div>
+        </div>
+        <div class="week-days">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i) => `
+            <div class="day ${i === 3 ? 'active' : ''}">
+              <div class="circle">${i < 3 ? '✕' : i === 3 ? '•' : ''}</div>
+              <div class="label">${d}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Top Reciters -->
+      <div class="section-title">
+        <span>Top Reciters</span>
+        <span class="see-all">This month →</span>
+      </div>
+      <div class="h-scroll" style="justify-content:center;">
+        ${rec.slice(0, 3).map(r => `
+          <div class="reciter-circle" onclick="playFromHome('${r.id}')">
+            <img src="${r.image}" alt="${r.name}" style="width:90px;height:90px;">
+            <div class="name">${r.name}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- New Reciters -->
+      <div class="section-title">
+        <span>New reciters</span>
+        <span class="see-all">See all</span>
+      </div>
+      <div class="h-scroll">
+        ${rec.slice(3, 6).map(r => `
+          <div class="reciter-circle new-badge" onclick="playFromHome('${r.id}')">
+            <img src="${r.image}" alt="${r.name}">
+            <div class="name">${r.name}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ====== RECITERS ======
+function renderReciters(container) {
+  const rec = state.reciters;
+  const favReciters = state.user.favourites.length 
+    ? rec.filter(r => state.user.favourites.includes(r.id))
+    : rec.slice(0, 4);
+
+  container.innerHTML = `
+    <div style="padding-bottom:20px;">
+      <div class="section-title">
+        <span>Top Reciters</span>
+        <span class="see-all">This month →</span>
+      </div>
+      <div class="h-scroll" style="justify-content:center;padding-top:10px;">
+        ${rec.slice(0, 3).map((r, i) => `
+          <div class="reciter-circle" onclick="playFromHome('${r.id}')">
+            <img src="${r.image}" alt="${r.name}" style="width:${i === 1 ? '110px' : '80px'};height:${i === 1 ? '110px' : '80px'};">
+            <div class="name">${r.name}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="section-title">
+        <span>★ Your favourites</span>
+        <span class="see-all">See all</span>
+      </div>
+      <div class="h-scroll">
+        ${favReciters.map(r => `
+          <div class="reciter-circle" onclick="playFromHome('${r.id}')">
+            <img src="${r.image}" alt="${r.name}">
+            <div class="name">${r.name}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="section-title">
+        <span>New reciters</span>
+        <span class="see-all">See all</span>
+      </div>
+      <div class="h-scroll">
+        ${rec.slice(3, 6).map(r => `
+          <div class="reciter-circle new-badge" onclick="playFromHome('${r.id}')">
+            <img src="${r.image}" alt="${r.name}">
+            <div class="name">${r.name}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="section-title">
+        <span>From Kazakhstan</span>
+        <span class="see-all">See all</span>
+      </div>
+      <div class="h-scroll">
+        ${rec.filter(r => r.country === 'Kazakhstan').map(r => `
+          <div class="reciter-circle" onclick="playFromHome('${r.id}')">
+            <img src="${r.image}" alt="${r.name}">
+            <div class="name">${r.name}</div>
+          </div>
+        `).join('') || '<div style="color:var(--text-muted);padding:20px;">Tidak ada</div>'}
+      </div>
+    </div>
+  `;
+}
+
+// ====== PLAYLISTS ======
+function renderPlaylists(container) {
+  container.innerHTML = `
+    <div style="padding-bottom:20px;">
+      <div class="section-title"><span>Playlists</span></div>
+      <div class="playlist-grid">
+        ${state.playlists.map(p => `
+          <div class="playlist-card" onclick="openPlaylist('${p.id}')">
+            <div class="bg" style="background-image:url('${p.image}')"></div>
+            <div class="content">
+              <div style="font-size:24px;margin-bottom:4px;">${p.reciter ? '🎙️' : '📖'}</div>
+              <div class="title">${p.title}</div>
+              <div class="subtitle">${p.reciter ? 'Special set by' : ''}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ====== SETTINGS ======
+function renderSettings(container) {
+  container.innerHTML = `
+    <div style="padding-bottom:20px;">
+      <div class="settings-section">
+        <div class="settings-group">
+          <div class="settings-item" onclick="alert('Fitur Premium')">
+            <div class="settings-icon" style="background:#1e3a5f;">💎</div>
+            <div class="settings-text"><div class="stitle">Get Premium</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="alert('Masukkan kode')">
+            <div class="settings-icon" style="background:#1e3a5f;">🏷️</div>
+            <div class="settings-text"><div class="stitle">Redeem Code</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="alert('Kolaborasi')">
+            <div class="settings-icon" style="background:#1e3a5f;">🤝</div>
+            <div class="settings-text"><div class="stitle">Collaborate with us</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">Help us grow</div>
+        <div class="settings-group">
+          <div class="settings-item" onclick="alert('Challenge')">
+            <div class="settings-icon" style="background:#4f46e5;">🎁</div>
+            <div class="settings-text">
+              <div class="stitle">Free Premium challenge</div>
+              <div class="sdesc">Post Quranify in social media and get free premium membership</div>
+            </div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="alert('Request fitur')">
+            <div class="settings-icon" style="background:#eab308;">💡</div>
+            <div class="settings-text"><div class="stitle">Request or suggest feature</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="alert('Report bug')">
+            <div class="settings-icon" style="background:#ef4444;">🐛</div>
+            <div class="settings-text"><div class="stitle">Report Bug</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">General</div>
+        <div class="settings-group">
+          <div class="settings-item" onclick="alert('Language')">
+            <div class="settings-icon">🌐</div>
+            <div class="settings-text"><div class="stitle">Language</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="alert('Download Manager')">
+            <div class="settings-icon">⬇️</div>
+            <div class="settings-text"><div class="stitle">Download Manager</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="alert('Notifications')">
+            <div class="settings-icon">🔔</div>
+            <div class="settings-text"><div class="stitle">Notifications</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="alert('Video quality')">
+            <div class="settings-icon">🎚️</div>
+            <div class="settings-text"><div class="stitle">Video quality</div></div>
+            <div class="settings-arrow">›</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ====== SEARCH ======
+function renderSearch(container) {
+  container.innerHTML = `
+    <div class="search-page">
+      <div class="search-header">
+        <h1>Search</h1>
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/></svg>
+          <input type="text" id="searchInput" placeholder="Reciters, surahs, collections" oninput="handleSearch(this.value)">
+        </div>
+      </div>
+      <div id="searchResults">
+        <div class="search-categories">
+          <div class="search-cat" onclick="alert('Reciters')">
+            <div class="icon" style="background:#1e3a5f;">🎙️</div>
+            <div>
+              <div class="cat-title">Reciters</div>
+              <div class="cat-desc">By name or country</div>
+            </div>
+          </div>
+          <div class="search-cat" onclick="alert('Surahs')">
+            <div class="icon" style="background:#1a5f1e;">📖</div>
+            <div>
+              <div class="cat-title">Surahs</div>
+              <div class="cat-desc">By name, number or ayats</div>
+            </div>
+          </div>
+          <div class="search-cat" onclick="alert('Playlists')">
+            <div class="icon" style="background:#5f1a5e;">🎵</div>
+            <div>
+              <div class="cat-title">Playlists</div>
+              <div class="cat-desc">By name or its content</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ====== PLAYER ======
+function openPlayer() {
+  if (!state.nowPlaying) {
+    state.nowPlaying = {
+      surah: 18,
+      surahName: 'Al-Kahf',
+      reciterId: 'mishary',
+      reciterName: 'Mishary Rashid Alafasy',
+      image: 'https://ui-avatars.com/api/?name=Mishary+Rashid&background=0D8ABC&color=fff&size=128',
+      audioUrl: 'https://cdn.islamic.network/quran/audio/128/ar.alafasy/18.mp3'
+    };
+  }
+  $('#playerOverlay').classList.add('open');
+  $('#playerTitle').textContent = state.nowPlaying.surahName;
+  $('#playerSubtitle').textContent = state.nowPlaying.reciterName;
+  $('#playerAvatar').src = state.nowPlaying.image;
+}
+
+function closePlayer() {
+  $('#playerOverlay').classList.remove('open');
+}
+
+function playFromHome(reciterId) {
+  const reciter = state.reciters.find(r => r.id === reciterId) || state.reciters[0];
+  state.nowPlaying = {
+    surah: 18,
+    surahName: 'Al-Kahf',
+    reciterId: reciter.id,
+    reciterName: reciter.name,
+    image: reciter.image,
+    audioUrl: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/18.mp3`
+  };
+  // Update mini player
+  $('#miniAvatar').src = reciter.image;
+  $('#miniTitle').textContent = 'Al-Kahf';
+  $('#miniSubtitle').textContent = reciter.name;
+  $('#playerTitle').textContent = 'Al-Kahf';
+  $('#playerSubtitle').textContent = reciter.name;
+  $('#playerAvatar').src = reciter.image;
+  openPlayer();
+  play();
+}
+
+function openPlaylist(id) {
+  const playlist = state.playlists.find(p => p.id === id);
+  if (playlist) {
+    alert(`Memutar playlist: ${playlist.title}`);
+  }
+}
+
+function play() {
+  if (!state.nowPlaying) return;
+  if (!state.audio) {
+    state.audio = new Audio(state.nowPlaying.audioUrl);
+    state.audio.playbackRate = state.speed;
+    state.audio.addEventListener('timeupdate', updateProgress);
+    state.audio.addEventListener('ended', () => {
+      state.isPlaying = false;
+      updatePlayIcons();
+      postProgress(state.audio.currentTime);
+    });
+  }
+  state.audio.play();
+  state.isPlaying = true;
+  updatePlayIcons();
+  postProgress(1); // catat progress
+}
+
+function togglePlay() {
+  if (!state.nowPlaying) return;
+  if (state.isPlaying) {
+    state.audio.pause();
+    state.isPlaying = false;
+  } else {
+    state.audio.play();
+    state.isPlaying = true;
+  }
+  updatePlayIcons();
+}
+
+function nextTrack() {
+  alert('Lanjut ke surah berikutnya');
+}
+
+function prevTrack() {
+  alert('Kembali ke surah sebelumnya');
+}
+
+function setSpeed() {
+  state.speed = state.speed === 1 ? 1.5 : state.speed === 1.5 ? 2 : 1;
+  $('#speedLabel').textContent = state.speed + 'x';
+  if (state.audio) state.audio.playbackRate = state.speed;
+}
+
+function seek(e) {
+  if (!state.audio) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  state.audio.currentTime = pct * state.audio.duration;
+}
+
+function updateProgress() {
+  if (!state.audio) return;
+  const pct = (state.audio.currentTime / state.audio.duration) * 100;
+  $('#progressFill').style.width = pct + '%';
+  $('#curTime').textContent = formatTime(state.audio.currentTime);
+  $('#durTime').textContent = '-' + formatTime(state.audio.duration - state.audio.currentTime);
+}
+
+function formatTime(sec) {
+  if (!sec || isNaN(sec)) return '00:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updatePlayIcons() {
+  const playPath = state.isPlaying ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z';
+  $('#playIcon').innerHTML = `<path d="${playPath}"/>`;
+  $('#miniPlayIcon').innerHTML = `<path d="${playPath}"/>`;
+}
+
+// ====== SEARCH HANDLER ======
+function handleSearch(q) {
+  const resultsDiv = $('#searchResults');
+  if (!q || q.trim().length < 2) {
+    resultsDiv.innerHTML = `
+      <div class="search-categories">
+        <div class="search-cat" onclick="alert('Reciters')">
+          <div class="icon" style="background:#1e3a5f;">🎙️</div>
+          <div><div class="cat-title">Reciters</div><div class="cat-desc">By name or country</div></div>
+        </div>
+        <div class="search-cat" onclick="alert('Surahs')">
+          <div class="icon" style="background:#1a5f1e;">📖</div>
+          <div><div class="cat-title">Surahs</div><div class="cat-desc">By name, number or ayats</div></div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const qLower = q.toLowerCase();
+  const matchedReciters = state.reciters.filter(r => 
+    r.name.toLowerCase().includes(qLower) || r.country.toLowerCase().includes(qLower)
+  );
+  const matchedPlaylists = state.playlists.filter(p => 
+    p.title.toLowerCase().includes(qLower)
+  );
+
+  let html = '';
+  if (matchedReciters.length) {
+    html += `<div class="section-title" style="margin:16px 0 8px;">Reciters</div><div class="h-scroll">`;
+    html += matchedReciters.map(r => `
+      <div class="reciter-circle" onclick="playFromHome('${r.id}')">
+        <img src="${r.image}" alt="${r.name}">
+        <div class="name">${r.name}</div>
+      </div>
+    `).join('');
+    html += `</div>`;
+  }
+  if (matchedPlaylists.length) {
+    html += `<div class="section-title" style="margin:16px 0 8px;">Playlists</div><div class="h-scroll">`;
+    html += matchedPlaylists.map(p => `
+      <div class="playlist-card" onclick="openPlaylist('${p.id}')">
+        <div class="bg" style="background-image:url('${p.image}')"></div>
+        <div class="content"><div class="title">${p.title}</div></div>
+      </div>
+    `).join('');
+    html += `</div>`;
+  }
+  if (!html) {
+    html = '<div style="text-align:center;padding:40px;color:var(--text-muted)">Tidak ditemukan</div>';
+  }
+  resultsDiv.innerHTML = html;
+}
+
+// ====== INSIGHTS OVERLAY ======
+function showInsights() {
+  alert(`Insights:
+Streak: ${state.user.streak || 0} days
+Total mendengarkan: ${Math.floor(state.user.totalMinutes || 0)} menit
+Minggu ini: ${Math.floor(state.user.weeklyMinutes || 0)} menit`);
+}
+
+// ====== INIT ======
+async function init() {
+  await fetchData();
+  renderAll();
+}
+
+// Jalankan
+init();
+</script>
+</body>
+</html>
