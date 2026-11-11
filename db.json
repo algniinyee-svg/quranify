@@ -1,0 +1,33 @@
+{
+  "users": {
+    "default": {
+      "id": "default",
+      "streak": 0,
+      "weeklyMinutes": 0,
+      "totalMinutes": 0,
+      "bookmarks": [],
+      "recentlyPlayed": [],
+      "favourites": ["mishary", "abdurrahman"]
+    }
+  },
+  "playlists": [
+    { "id": "duaa", "title": "Duaa & Ruqia", "color": "#4ade80", "image": "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=400" },
+    { "id": "emotional", "title": "Emotional Recitations", "color": "#8b5cf6", "image": "https://images.unsplash.com/photo-1471107340929-a87cd0f5b5f3?w=400" },
+    { "id": "muhammad", "title": "Muhammad Al-Luhaidan", "reciter": "Muhammad Al-Luhaidan", "color": "#059669", "image": "https://ui-avatars.com/api/?name=Muhammad+Al-Luhaidan&background=059669&color=fff&size=128" },
+    { "id": "yasser", "title": "Yasser Al-Dosari", "reciter": "Yasser Al-Dosari", "color": "#0D9488", "image": "https://ui-avatars.com/api/?name=Yasser+Al-Dosari&background=0D9488&color=fff&size=128" },
+    { "id": "abdulrahman", "title": "Abdul Rahman Mossad", "reciter": "Abdul Rahman Mossad", "color": "#1E3A8A", "image": "https://ui-avatars.com/api/?name=Abdul+Rahman+Mossad&background=1E3A8A&color=fff&size=128" },
+    { "id": "umair", "title": "Umair Shamim", "reciter": "Umair Shamim", "color": "#374151", "image": "https://ui-avatars.com/api/?name=Umair+Shamim&background=374151&color=fff&size=128" },
+    { "id": "mahdi", "title": "Mahdi ash-Shishani", "reciter": "Mahdi ash-Shishani", "color": "#92400E", "image": "https://ui-avatars.com/api/?name=Mahdi&background=92400E&color=fff&size=128" },
+    { "id": "ibrahim", "title": "Ibrahim ash-Shishani", "reciter": "Ibrahim ash-Shishani", "color": "#6B7280", "image": "https://ui-avatars.com/api/?name=Ibrahim&background=6B7280&color=fff&size=128" }
+  ],
+  "reciters": [
+    { "id": "mishary", "name": "Mishary Rashid Alafasy", "country": "Kuwait", "image": "https://ui-avatars.com/api/?name=Mishary+Rashid&background=0D8ABC&color=fff&size=128" },
+    { "id": "abdurrahman", "name": "Abdur Rahman Al-Sudais", "country": "Saudi Arabia", "image": "https://ui-avatars.com/api/?name=Abdur+Rahman&background=1E3A8A&color=fff&size=128" },
+    { "id": "yasser", "name": "Yasser Al-Dosari", "country": "Saudi Arabia", "image": "https://ui-avatars.com/api/?name=Yasser+Al-Dosari&background=0D9488&color=fff&size=128" },
+    { "id": "ahmed", "name": "Ahmed Kaseb", "country": "Egypt", "image": "https://ui-avatars.com/api/?name=Ahmed+Kaseb&background=DC2626&color=fff&size=128" },
+    { "id": "omar", "name": "Omar Bn DiaaAldeen", "country": "Kazakhstan", "image": "https://ui-avatars.com/api/?name=Omar+Bn&background=111827&color=fff&size=128" },
+    { "id": "yassin", "name": "Yassin Al-Jazairi", "country": "Algeria", "image": "https://ui-avatars.com/api/?name=Yassin&background=7C3AED&color=fff&size=128" },
+    { "id": "maher", "name": "Maher Al-Muaiqly", "country": "Saudi Arabia", "image": "https://ui-avatars.com/api/?name=Maher&background=059669&color=fff&size=128" },
+    { "id": "saad", "name": "Saad Al-Ghamdi", "country": "Saudi Arabia", "image": "https://ui-avatars.com/api/?name=Saad&background=DB2777&color=fff&size=128" }
+  ]
+}
